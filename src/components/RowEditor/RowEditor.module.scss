@@ -1,0 +1,52 @@
+.emptyRow {
+	& input {
+		border: 1px solid #a1a1a1;
+		background: transparent;
+		border-radius: 5px;
+		width: 100%;
+		height: 30px;
+		padding: 5px 10px;
+		color: #a1a1a1;
+	}
+}
+
+.emptyRow input:placeholder {
+	color: #414144;
+}
+
+.emptyRow input:focus {
+	border-color: white;
+	outline: none;
+}
+
+.icons {
+	background: transparent;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 60px;
+	padding: 5px;
+	border-radius: 7px;
+	gap: 10px;
+	transition: background 0.2s linear;
+
+	&.active {
+		background: #414144;
+	}
+
+	& button {
+		display: flex;
+		cursor: pointer;
+	}
+}
+
+.deleteIcon {
+	visibility: hidden;
+	opacity: 0;
+	transition: visibility 0.2s linear, opacity 0.2s linear;
+
+	&.active {
+		visibility: visible;
+		opacity: 1;
+	}
+}

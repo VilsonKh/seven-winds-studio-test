@@ -28,15 +28,31 @@ interface OutlayRowRequest {
 	supportCosts: number;
 }
 
-export async function createRow(eID: number, row: OutlayRowRequest) {
+const defaultData = {
+	"machineOperatorSalary": 0,
+	"mainCosts": 0,
+	"materials": 0,
+	"mimExploitation": 0,
+	"supportCosts": 0
+}
+
+export async function createRow(eID: number,parentId: number | null, row: any) {
+	
+	const convertedFormData: Record<string, number | string> = {}
+	row.forEach((value: any, key: any) => {
+		convertedFormData[key] = value
+	})
+	const combinedData = {...defaultData, ...convertedFormData, parentId}
+	console.log(convertedFormData)
 	const response = await fetch(`${API_ADDRESS}/${eID}/row/create`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify(row),
+		body: JSON.stringify(combinedData),
 	});
 	const data = await response.json();
+	console.log(data)
 	return data;
 }
 
@@ -65,7 +81,7 @@ export async function updateRow(eID: number, rID: string, row: OutlayRowUpdateRe
 	return data;
 }
 
-export const deleteRow = async (eID: number, rID: string) => {
+export const deleteRow = async (eID: number, rID: number) => {
   await fetch(`${API_ADDRESS}/${eID}/row/${rID}/delete`, {
     method: 'DELETE',
   });
