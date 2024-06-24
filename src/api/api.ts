@@ -29,21 +29,17 @@ interface OutlayRowRequest {
 }
 
 const defaultData = {
-	"machineOperatorSalary": 0,
-	"mainCosts": 0,
-	"materials": 0,
-	"mimExploitation": 0,
-	"supportCosts": 0
-}
+	machineOperatorSalary: 0,
+	mainCosts: 0,
+	materials: 0,
+	mimExploitation: 0,
+	supportCosts: 0,
+};
 
-export async function createRow(eID: number,parentId: number | null, row: any) {
-	
-	const convertedFormData: Record<string, number | string> = {}
-	row.forEach((value: any, key: any) => {
-		convertedFormData[key] = value
-	})
-	const combinedData = {...defaultData, ...convertedFormData, parentId}
-	console.log(convertedFormData)
+export async function createRow(eID: number, parentId: number | null, row: any) {
+	const combinedData = { ...defaultData, ...row, parentId };
+	console.log("conminedData", combinedData)
+try {
 	const response = await fetch(`${API_ADDRESS}/${eID}/row/create`, {
 		method: "POST",
 		headers: {
@@ -51,9 +47,19 @@ export async function createRow(eID: number,parentId: number | null, row: any) {
 		},
 		body: JSON.stringify(combinedData),
 	});
-	const data = await response.json();
-	console.log(data)
-	return data;
+
+	if(!response.ok) {
+		throw new Error("Failed to create the row")
+	}
+
+	const {current} = await response.json();
+	console.log(current)
+	return {current}
+} catch{
+	console.log("Failed to create the row")
+}
+	
+
 }
 
 interface OutlayRowUpdateRequest {
@@ -82,7 +88,17 @@ export async function updateRow(eID: number, rID: string, row: OutlayRowUpdateRe
 }
 
 export const deleteRow = async (eID: number, rID: number) => {
-  await fetch(`${API_ADDRESS}/${eID}/row/${rID}/delete`, {
-    method: 'DELETE',
-  });
+	try {
+		const response = await fetch(`${API_ADDRESS}/${eID}/row/${rID}/delete`, {
+			method: "DELETE",
+		});
+
+		if (!response.ok) {
+			throw new Error("Failed to delete row");
+		}
+
+		return true;
+	} catch {
+		console.log("Failed to delete row");
+	}
 };
