@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styles from "./TableRow.module.scss";
 import { createRow, deleteRow, updateRow } from "src/api/api";
+import LevelCell from "../LevelCell/LevelCell";
+import { tableColumns } from "src/const";
+import InputCell from "../InputCell/InputCell";
 
 interface TableRowProps {
 	row?: any;
@@ -14,7 +17,6 @@ interface TableRowProps {
 
 const TableRow: React.FC<TableRowProps> = ({ row, setData, editingRowId, setIsEditingRowId, level, eID, data }) => {
 	const isCurrentRowEditing = editingRowId === (row && row.id);
-	const marginLeft = `${level && level * 20}px`;
 
 	const [formData, setFormData] = useState({
 		rowName: "",
@@ -28,27 +30,6 @@ const TableRow: React.FC<TableRowProps> = ({ row, setData, editingRowId, setIsEd
 		const { name, value } = event.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 		console.log(formData);
-	}
-
-	function handleMouseOver() {
-		if (editingRowId) return;
-		document.querySelectorAll(`.${styles.icons}`).forEach((el) => {
-			el.classList.add(styles.active);
-		});
-
-		document.querySelectorAll(`.${styles.deleteIcon}`).forEach((el) => {
-			el.classList.add(styles.active);
-		});
-	}
-
-	function handleMouseOut() {
-		document.querySelectorAll(`.${styles.icons}`).forEach((el) => {
-			el.classList.remove(styles.active);
-		});
-
-		document.querySelectorAll(`.${styles.deleteIcon}`).forEach((el) => {
-			el.classList.remove(styles.active);
-		});
 	}
 
 	async function handleDeleteRow(rID: number) {
@@ -108,12 +89,9 @@ const TableRow: React.FC<TableRowProps> = ({ row, setData, editingRowId, setIsEd
 		setIsEditingRowId(newChild.tempId);
 	}
 
-
 	async function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>, parentId: number, tempId: number, rowId: number) {
 		if (e.key === "Enter") {
 			e.preventDefault();
-
-			console.log("Form Data:", formData);
 			if (tempId) {
 				try {
 					// console.log("Adding new row. Parent ID:", parentId, "Form Data", formData);
@@ -195,84 +173,24 @@ const TableRow: React.FC<TableRowProps> = ({ row, setData, editingRowId, setIsEd
 				onDoubleClick={() => setIsEditingRowId(editingRowId === row.id ? null : row.id)}
 				onKeyDown={editingRowId ? (e) => handleKeyDown(e, row.parentId, row.tempId, row.id) : undefined}
 			>
-				<td
-					onMouseOver={editingRowId === undefined ? undefined : handleMouseOver}
-					onMouseOut={editingRowId === undefined ? undefined : handleMouseOut}
-				>
-					<div
-						className={styles.icons}
-						style={{ marginLeft }}
-					>
-						<button
-							className={styles.documentIcon}
-							onClick={() => handleAddNewChild(row.id)}
-						>
-							<img
-								src="./img/document-filled.svg"
-								alt="document"
-							/>
-						</button>
-						<button
-							className={styles.deleteIcon}
-							onClick={() => handleDeleteRow(row.id)}
-						>
-							<img
-								src="./img/basket.svg"
-								alt="basket"
-							/>
-						</button>
-					</div>
-				</td>
-				<td>
-					<input
-						type="text"
-						placeholder={"Наименование работ"}
-						name="rowName"
-						defaultValue={row ? row.rowName : ""}
-						readOnly={!editingRowId}
-						onChange={handleInputChange}
+				<LevelCell
+					handleAddNewChild={handleAddNewChild}
+					handleDeleteRow={handleDeleteRow}
+					level={level}
+					row={row}
+					editingRowId={editingRowId}
+				/>
+
+				{tableColumns.map((column, i) => (
+					<InputCell
+						key={i}
+						inputName={column.name}
+						placeholder={column.placeholder}
+						handleInputChange={handleInputChange}
+						editingRowId={editingRowId}
+						defaultValue={row ? row[column.name] : ""}
 					/>
-				</td>
-				<td>
-					<input
-						type="text"
-						placeholder={"Основная з/п"}
-						name="salary"
-						defaultValue={row ? row.salary : ""}
-						readOnly={!editingRowId}
-						onChange={handleInputChange}
-					/>
-				</td>
-				<td>
-					<input
-						type="text"
-						placeholder={"Оборудование"}
-						name="equipmentCosts"
-						defaultValue={row ? row.equipmentCosts : ""}
-						readOnly={!editingRowId}
-						onChange={handleInputChange}
-					/>
-				</td>
-				<td>
-					<input
-						type="text"
-						placeholder={"Накладные расходы"}
-						name="overheads"
-						defaultValue={row ? row.overheads : ""}
-						readOnly={!editingRowId}
-						onChange={handleInputChange}
-					/>
-				</td>
-				<td>
-					<input
-						type="text"
-						placeholder={"Сметная прибыль"}
-						name="estimatedProfit"
-						defaultValue={row ? row.estimatedProfit : ""}
-						readOnly={!editingRowId}
-						onChange={handleInputChange}
-					/>
-				</td>
+				))}
 			</tr>
 			{row &&
 				row.child &&

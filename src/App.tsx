@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "./components/Sidebar/Sidebar";
-import TableHeader from "./components/TableHeader/TableHeader";
+import TableHeader from "./components/Table/TableHeader/TableHeader";
 import Table from "./components/Table/Table";
 import { createEntity } from "./api/api";
 import "./App.style.scss";

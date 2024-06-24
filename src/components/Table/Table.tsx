@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import TableHeader from "../TableHeader/TableHeader";
+import TableHeader from "./TableHeader/TableHeader";
 import { fetchRows } from "src/api/api";
 import styles from "./Table.module.scss";
-import TableRow from "../TableRow/TableRow";
+import TableRow from "./TableRow/TableRow";
 
 const Table = ({ eID }: { eID: number }) => {
 	const [data, setData] = useState([]);
