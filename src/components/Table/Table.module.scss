@@ -1,22 +1,23 @@
 .table {
+
 	& input {
 		color: white;
 		background: transparent;
-    border: 1px solid transparent;
-    width: 100%;
-    border-radius: 5px;
-    padding: 5px 10px;
+		border: 1px solid transparent;
+		width: 100%;
+		border-radius: 5px;
+		padding: 5px 10px;
 	}
 
 	& input:focus {
-    border: 1px solid #414141;
+		border: 1px solid #414141;
 		outline: none;
 	}
 
-  & .activeInput {
-    border-color: #414144;
-    color: #a1a1a1;
-  }
+	& .activeInput {
+		border-color: #414144;
+		color: #a1a1a1;
+	}
 }
 
 table {
@@ -36,8 +37,6 @@ th {
 tr {
 	border-bottom: 2px solid #a1a1a1;
 }
-
-
 
 .icons {
 	background: transparent;

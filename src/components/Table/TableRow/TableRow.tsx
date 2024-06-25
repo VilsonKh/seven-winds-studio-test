@@ -13,9 +13,11 @@ interface TableRowProps {
 	level?: number;
 	eID?: number;
 	data?: any[];
+	isLastChild: boolean;
+	lastChildIndex: number;
 }
 
-const TableRow: React.FC<TableRowProps> = ({ row, setData, editingRowId, setIsEditingRowId, level, eID, data }) => {
+const TableRow: React.FC<TableRowProps> = ({ row, setData, editingRowId, setIsEditingRowId, level, eID, isLastChild , lastChildIndex}) => {
 	const isCurrentRowEditing = editingRowId === (row && row.id);
 
 	const [formData, setFormData] = useState({
@@ -25,69 +27,6 @@ const TableRow: React.FC<TableRowProps> = ({ row, setData, editingRowId, setIsEd
 		overheads: "",
 		estimatedProfit: "",
 	});
-
-	function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-		const { name, value } = event.target;
-		setFormData((prev) => ({ ...prev, [name]: value }));
-		console.log(formData);
-	}
-
-	async function handleDeleteRow(rID: number) {
-		const success = await deleteRow(eID!, rID);
-		if (success) {
-			setData((prev) => deleteRowLocally(rID, prev));
-		} else {
-			console.error("Fauled to delete row locally due to server error");
-		}
-	}
-
-	function deleteRowLocally(rowId, items) {
-		return items.reduce((acc, item) => {
-			if (item.id !== rowId) {
-				const newItem = { ...item };
-				if (item.child && item.child.length > 0) {
-					newItem.child = deleteRowLocally(rowId, item.child);
-				}
-				acc.push(newItem);
-			}
-			return acc;
-		}, []);
-	}
-
-	function handleAddNewChild(parentId: number) {
-		const newChild = {
-			tempId: Date.now(),
-			rowName: "",
-			salary: "",
-			equipmentCosts: "",
-			overheads: "",
-			estimatedProfit: "",
-			child: [],
-			isEditing: true,
-			parentId,
-		};
-
-		setData((prevData: any) => {
-			const addNewChild = (items: any, parentId: number) => {
-				return items.map((item: any) => {
-					if (item.id === parentId) {
-						const updatedItem = {
-							...item,
-							child: [...(item.child || []), newChild],
-						};
-						return updatedItem;
-					} else if (item.child) {
-						return { ...item, child: addNewChild(item.child, parentId) };
-					}
-					return item;
-				});
-			};
-
-			return addNewChild(prevData, parentId);
-		});
-		console.log(parentId);
-		setIsEditingRowId(newChild.tempId);
-	}
 
 	async function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>, parentId: number, tempId: number, rowId: number) {
 		if (e.key === "Enter") {
@@ -137,7 +76,6 @@ const TableRow: React.FC<TableRowProps> = ({ row, setData, editingRowId, setIsEd
 	function updateLocalData(data: any[], updatedRow: any) {
 		return data.map((item) => {
 			if (item.id === updatedRow.id) {
-				// Сохраняем существующих детей, если они есть
 				const existingChildren = item.child || [];
 				return { ...updatedRow, child: existingChildren, isEditing: false };
 			} else if (item.child) {
@@ -174,11 +112,14 @@ const TableRow: React.FC<TableRowProps> = ({ row, setData, editingRowId, setIsEd
 				onKeyDown={editingRowId ? (e) => handleKeyDown(e, row.parentId, row.tempId, row.id) : undefined}
 			>
 				<LevelCell
-					handleAddNewChild={handleAddNewChild}
-					handleDeleteRow={handleDeleteRow}
 					level={level}
 					row={row}
 					editingRowId={editingRowId}
+					setData={setData}
+					eID={eID}
+					setIsEditingRowId={setIsEditingRowId}
+					isLastChild={isLastChild}
+					lasdtChildIndex
 				/>
 
 				{tableColumns.map((column, i) => (
@@ -186,15 +127,18 @@ const TableRow: React.FC<TableRowProps> = ({ row, setData, editingRowId, setIsEd
 						key={i}
 						inputName={column.name}
 						placeholder={column.placeholder}
-						handleInputChange={handleInputChange}
 						editingRowId={editingRowId}
 						defaultValue={row ? row[column.name] : ""}
+						setFormData={setFormData}
+						isLastChild={isLastChild}
+						lastChildIndex={lastChildIndex}
 					/>
 				))}
 			</tr>
 			{row &&
 				row.child &&
-				row.child.map((childRow: any, i: number) => {
+				row.child.map((childRow: any, i: number, arr: any) => {
+					console.log("index:", i, "lastChildIndex:", lastChildIndex, "rowName:", childRow.rowName);
 					return (
 						<TableRow
 							key={childRow.id || childRow.tempId}
@@ -204,6 +148,8 @@ const TableRow: React.FC<TableRowProps> = ({ row, setData, editingRowId, setIsEd
 							setIsEditingRowId={setIsEditingRowId}
 							level={level! + 1}
 							eID={eID}
+							isLastChild={i === row.child.length - 1 && childRow.child.length === 0}
+							lastChildIndex={lastChildIndex}
 						/>
 					);
 				})}

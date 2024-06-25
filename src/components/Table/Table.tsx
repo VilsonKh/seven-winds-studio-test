@@ -6,12 +6,12 @@ import TableRow from "./TableRow/TableRow";
 
 const Table = ({ eID }: { eID: number }) => {
 	const [data, setData] = useState([]);
-  const [editingRowId, setIsEditingRowId] = useState<number | null>(null)
+	const [editingRowId, setIsEditingRowId] = useState<number | null>(null);
 
 	useEffect(() => {
 		const fetchData = async () => {
 			const rows = await fetchRows(eID);
-      console.log(rows)
+			console.log(rows);
 			setData(rows);
 		};
 
@@ -34,18 +34,22 @@ const Table = ({ eID }: { eID: number }) => {
 				</thead>
 				<tbody>
 					{data.length > 0 ? (
-						data.map((row, i) => (
-							<TableRow
-								key={i}
-								setData={setData}
-								row={row}
-								editingRowId={editingRowId}
-                setIsEditingRowId={setIsEditingRowId}
-                level={0}
-                eID={eID}
-                data= {data}
-							/>
-						))
+						data.map((row: any, i: number) => {
+
+							return (
+								<TableRow
+									key={i}
+									setData={setData}
+									row={row}
+									editingRowId={editingRowId}
+									setIsEditingRowId={setIsEditingRowId}
+									level={0}
+									eID={eID}
+									data={data}
+									lastChildIndex={row.child.length - 1 }
+								/>
+							);
+						})
 					) : (
 						<TableRow />
 					)}

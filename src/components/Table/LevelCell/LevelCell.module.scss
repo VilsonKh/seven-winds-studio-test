@@ -29,3 +29,40 @@
 		opacity: 1;
 	}
 }
+
+.documentIcon{
+  position: relative;
+}
+
+.documentIcon.parent::before {
+  content: '';
+  position: absolute;
+  height: 40px;
+  width: 12px;
+  border-bottom: 2px solid white;
+  border-left: 2px solid white;
+  top: 100%;
+  left: 50%;
+}
+
+.documentIcon.child::before {
+  content: "";
+  position: absolute;
+  height: 50px;
+  width: 12px;
+  border-bottom: 2px solid white;
+  border-left: 2px solid white;
+  top: 50%;
+  right: 80%;
+}
+
+.documentIcon.nextChild::before {
+  content: "";
+  position: absolute;
+  height: 50px;
+  width: 12px;
+  // background: white;
+  border-left: 2px solid white;
+  top: 50%;
+  right: 80%;
+}

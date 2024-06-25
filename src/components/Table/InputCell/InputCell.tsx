@@ -4,13 +4,18 @@ interface InputCellProps {
 	inputName: string;
 	placeholder: string;
 	rowName?: string;
-	handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	editingRowId: number | null;
   defaultValue: string;
+  setFormData: any
 }
 
-const InputCell: React.FC<InputCellProps> = ({inputName, placeholder, defaultValue, handleInputChange, editingRowId}) => {
-	return (
+const InputCell: React.FC<InputCellProps> = ({inputName, placeholder, defaultValue, editingRowId, setFormData}) => {
+	function handleInputChange(event: React.ChangeEvent<HTMLInputElement> ) {
+		const { name, value } = event.target;
+		setFormData((prev) => ({ ...prev, [name]: value }));
+	}
+  
+  return (
 		<td>
 			<input
 				type="text"
